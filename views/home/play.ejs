@@ -1,0 +1,10 @@
+<script	type="text/javascript">
+function onMastReady() {
+	Mast.data.game = new Mast.data.GameModel(<%-JSON.stringify(game)%>);
+	socket.get("/game/"+Mast.data.game.get('id'), console.log.bind(console));
+	Mast.data.user = <%-JSON.stringify(user)%>;
+	Mast.data.app.game.append('Game',{model:Mast.data.game});
+	Mast.data.app.updateStats();
+}
+</script>
+<region template="App"></region>

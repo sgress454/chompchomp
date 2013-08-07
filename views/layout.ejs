@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%- title %></title>
+
+    <!-- Viewport mobile tag for sensible mobile support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" type="text/css" href="/styles/main.css" />
+    <!-- load mast -->
+    <script type="text/javascript" src="/js/mast.dev.js"></script>
+
+    <!-- load move.js -->
+    <script type="text/javascript" src="/js/move.js"></script>
+    
+  </head>
+
+  <body>
+    <%- body %>
+
+    <!-- A few key dependencies, linked in order -->
+
+
+    <!--TEMPLATES-->
+    <script type="text/javascript" src="/jst.js"></script>
+    <!--TEMPLATES END-->
+
+
+    <!-- Bring in the socket.io client -->
+    <script type="text/javascript" src="/js/socket.io.js"></script>
+    
+    <!-- then beef it up with some convenience logic for talking to Sails.js -->
+    <script type="text/javascript" src="/js/sails.io.js"></script>
+
+    <!-- listen on socket.io for incoming messages -->
+    <script type="text/javascript" src="/js/app.js"></script>
+
+
+    <!--SCRIPTS-->
+    <script src="/linker/js/app.js"></script>
+    <script src="/linker/js/GameModel.js"></script>
+    <script src="/linker/js/PieceModel.js"></script>
+    <script src="/linker/js/PlayerModel.js"></script>
+    <script src="/linker/js/TileModel.js"></script>
+    <script src="/linker/js/App.js"></script>
+    <script src="/linker/js/Board.js"></script>
+    <script src="/linker/js/Game.js"></script>
+    <script src="/linker/js/Piece.js"></script>
+    <script src="/linker/js/Tile.js"></script>
+    <!--SCRIPTS END-->
+
+    <script type="text/javascript">
+
+        Mast.logLevel = 'silent';
+
+        // Modify JST templates to eliminate the nasty parts of the file path
+        for (var key in JST) {
+            var id = key.match(/\/([^\/]+)\..+$/)[1];
+            Mast.templates[id] = JST[key];
+        }
+
+        socket.on('connect', function socketConnected() {
+            Mast.raise(
+                function appReady() {
+                    if (typeof(onMastReady) != 'undefined') {
+                        onMastReady();
+                    }
+                }
+            );
+        });
+
+    </script>
+
+    </body>
+</html>
