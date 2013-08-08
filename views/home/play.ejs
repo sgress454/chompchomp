@@ -1,10 +1,23 @@
 <script	type="text/javascript">
-function onMastReady() {
-	Mast.data.game = new Mast.data.GameModel(<%-JSON.stringify(game)%>);
-	socket.get("/game/"+Mast.data.game.get('id'), console.log.bind(console));
-	Mast.data.user = <%-JSON.stringify(user)%>;
-	Mast.data.app.game.append('Game',{model:Mast.data.game});
-	Mast.data.app.updateStats();
+pageRequiresLogin = true;
+function onMastReady(user) {
+
+	var gameId = $.url().param('gid');
+	if (!gameId) {
+		document.location.href="/games";
+		return;
+	}
+
+	socket.get(Mast.data.catamaranServer+"/game/"+gameId, function(game) {
+		if (!game.id) {
+			document.location.href="/games";
+			return;
+		}
+		Mast.data.game = new Mast.data.GameModel(game);	
+		Mast.data.app.game.append('Game',{model:Mast.data.game});
+		Mast.data.app.updateStats();
+	});
+	
 }
 </script>
 <region template="App"></region>

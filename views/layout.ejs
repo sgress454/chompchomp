@@ -9,12 +9,71 @@
     <!-- load mast -->
     <script type="text/javascript" src="/js/mast.dev.js"></script>
 
+    <!-- load purl.js URL parser-->
+    <script type="text/javascript" src="/js/purl.js"></script>
+
     <!-- load move.js -->
     <script type="text/javascript" src="/js/move.js"></script>
+
+    <script type="text/javascript">
+        // (function() {
+
+        //   var proxiedSync = Backbone.sync;
+
+        //   Backbone.sync = function(method, model, options) {
+        //     options || (options = {});
+
+        //     if (!options.crossDomain) {
+        //       options.crossDomain = true;
+        //     }
+
+        //     if (!options.xhrFields) {
+        //       options.xhrFields = {withCredentials:true};
+        //     }
+
+        //     return proxiedSync(method, model, options);
+        //   };
+        // })();    
+        
+        var pageRequiresLogin = false;
+        Mast.data.catamaranServer = "http://catamaran.dyndns.info:1338";
+        Mast.logLevel = 'debug';
+        $.ajaxSetup({
+            crossDomain: true,
+            xhrFields: {
+              withCredentials: true
+            }
+        });
+
+
+        // Check the user's login status
+
+        function bootStrap() {
+            $.ajax(Mast.data.catamaranServer+'/user', {
+                type: 'GET',
+                success: function(data){
+                    if (data.user === null && pageRequiresLogin) {
+                        document.location.href="/login";
+                    } else {
+                        Mast.raise(
+                            function appReady() {
+                                Mast.data.user = data.user;
+                                if (typeof(onMastReady) != 'undefined') {
+                                    onMastReady();
+                                }
+                            }
+                        );
+                    } 
+                }
+            });
+        }          
+    </script>
+
     
   </head>
 
   <body>
+
     <%- body %>
 
     <!-- A few key dependencies, linked in order -->
@@ -31,12 +90,7 @@
     <!-- then beef it up with some convenience logic for talking to Sails.js -->
     <script type="text/javascript" src="/js/sails.io.js"></script>
 
-    <!-- listen on socket.io for incoming messages -->
-    <script type="text/javascript" src="/js/app.js"></script>
-
-
     <!--SCRIPTS-->
-    <script src="/linker/js/app.js"></script>
     <script src="/linker/js/GameModel.js"></script>
     <script src="/linker/js/PieceModel.js"></script>
     <script src="/linker/js/PlayerModel.js"></script>
@@ -48,9 +102,12 @@
     <script src="/linker/js/Tile.js"></script>
     <!--SCRIPTS END-->
 
-    <script type="text/javascript">
+    <!-- listen on socket.io for incoming messages -->
+    <script type="text/javascript" src="/js/app.js"></script>
 
-        Mast.logLevel = 'silent';
+
+
+    <script type="text/javascript">
 
         // Modify JST templates to eliminate the nasty parts of the file path
         for (var key in JST) {
@@ -58,15 +115,8 @@
             Mast.templates[id] = JST[key];
         }
 
-        socket.on('connect', function socketConnected() {
-            Mast.raise(
-                function appReady() {
-                    if (typeof(onMastReady) != 'undefined') {
-                        onMastReady();
-                    }
-                }
-            );
-        });
+
+
 
     </script>
 

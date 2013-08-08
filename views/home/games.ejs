@@ -1,16 +1,55 @@
 <script type="text/javascript">
-$(function(){
-	$('.join-button').click(function(){
-		socket.get("/game/"+$(this).attr('data-game-id')+"/sjoin", {}, function(response) {
-			if (response.success) {
-				document.location.href = "/play";
+	pageRequiresLogin = true;
+	function onMastReady() {
+
+		$.ajax(Mast.data.catamaranServer+"/game", {
+			type: 'GET',
+            crossDomain: true,
+            xhrFields: {
+              withCredentials: true
+            },
+			success: function(data) {
+				_.each(data, function(game) {
+					var row = $('<tr></tr>');
+					row.append($('<td>'+game.players[0].name+'</td>'));
+					row.append($('<td>'+(game.players[1] ? game.players[1].name : "---" )+'</td>'));
+					if (game.endedOn) {
+						row.append($('<td><button class="join-button" data-game-id="'+game.id+'">View Board</button></td>'));
+					} else if (game.players[0].id == Mast.data.user.id || (game.players[1] && game.players[1].id == Mast.data.user.id)) {
+						row.append($('<td><button class="join-button" data-game-id="'+game.id+'">Resume</button></td>'));
+					} else if (game.players.length < 2) {
+						row.append($('<td><button class="join-button" data-game-id="'+game.id+'">Join</button></td>'));
+					} else {
+						row.append($('<td><button class="join-button" data-game-id="'+game.id+'">Watch</button></td>'));
+					}
+					$('.games-list tbody').append(row);
+				});
+
+				$('.join-button').click(function(){
+					var gameId = $(this).attr('data-game-id');
+					socket.post(Mast.data.catamaranServer+"/game/"+gameId+"/join", {}, function(response) {
+						if (response.success) {
+							document.location.href = "/play?gid="+gameId;
+						}
+					});
+				});
+
+				$('#new-game-button').click(function(){
+					socket.post(Mast.data.catamaranServer+"/game/new", {}, function(response) {
+						if (response.success) {
+							document.location.href = "/play?gid="+response.gameId;
+						}
+					});
+				});
 			}
-		});
-	});
-});
+
+		})
+
+
+	}
 </script>
-<h3><% if (errors) { %><%=errors%><% } %></h3>
-<button onclick="document.location.href='/game/new'">New game</button>
+<h3></h3>
+<button id="new-game-button">New game</button>
 <table class="games-list">
 	<thead>
 		<tr>
@@ -20,22 +59,6 @@ $(function(){
 		</tr>
 	</thead>
 	<tbody>
-	<% _.each(games, function(game) { %>
-		<tr>
-			<td><%- game.players[0] ? game.players[0].name : "---" %></td>
-			<td><%- game.players[1] ? game.players[1].name : "---" %></td>
-			<td>
-				<% if ((game.players[0] && game.players[0].id == user.id) || (game.players[1] && game.players[1].id == user.id)) { %>
-					<button class="join-button" data-game-id="<%- game.id %>">resume</button>
-				<% } else if (game.players.length < 2) { %>
-					<button class="join-button" data-game-id="<%- game.id %>">join</button>
-				<% } else { %>
-					Watch
-				<% } %>
-				</button>
-			</td>
-		</tr>
-	<% }) %>
 	</tbody>
 </table>
 

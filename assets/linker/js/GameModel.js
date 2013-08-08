@@ -1,6 +1,6 @@
 Mast.data.GameModel = Mast.Model.extend({
 
-	url: '/game',
+	url: Mast.data.catamaranServer+'/game',
 
 	defaults: function() {
 		return {

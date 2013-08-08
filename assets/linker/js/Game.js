@@ -169,7 +169,9 @@ Mast.define('Game', function () {
 						// Once all of the clonings are done, move to the next player's turn
 						$.when.apply(null, queue).then(function(){
 							// Add the move to the game's moves list, save, and sync to the server
-							self.model.get('moves').push(newMove);
+							if (!force) {
+								self.model.get('moves').push(newMove);
+							}
 							self.nextTurn(force);
 						});
 
@@ -201,11 +203,30 @@ Mast.define('Game', function () {
 			var self = this;
 			this.model.set('currentPlayer', (this.model.get('currentPlayer')+1) % this.model.get('players').length);
 			if (!silent) {
-				this.model.save({}, {success: function(){
-					self.clearAvailabilityStatus();
-					self.checkForAvailableMoves();
-					Mast.trigger('%nextTurn');
-				}});
+				$.ajax(Mast.data.catamaranServer+'/game', {
+					crossDomain: true,
+					xhrFields: {
+						withCredentials: true
+					},
+					type: "PUT",
+					data: JSON.stringify(this.model.toJSON()),
+					processData: false,
+					contentType: "application/json",
+					success: function(data) {
+						self.clearAvailabilityStatus();
+						self.checkForAvailableMoves();
+						Mast.trigger('%nextTurn');
+					}
+				});
+				// this.model.save({}, {success: function(data){
+				// 	self.clearAvailabilityStatus();
+				// 	self.checkForAvailableMoves();
+				// 	Mast.trigger('%nextTurn');
+				// }});
+			} else {
+				self.clearAvailabilityStatus();
+				self.checkForAvailableMoves();
+				Mast.trigger('%nextTurn');
 			}
 		},
 

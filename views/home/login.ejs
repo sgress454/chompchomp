@@ -1,6 +1,30 @@
+<script type="text/javascript">
+	function onMastReady() {
+
+		$('#submit').click(function(){
+			$.ajax(Mast.data.catamaranServer+"/login", {
+				type: 'POST',
+                crossDomain: true,
+                xhrFields: {
+                  withCredentials: true
+                },
+				data: $('#loginForm').serialize(), 
+				success: function(response){
+					if (response.success) {
+						document.location.href = "/games";
+					} else {
+						$('.errors').html(JSON.stringify(response.errors));
+					}
+				}
+			});
+		});
+
+	}
+</script>
 <h1>UserSwarm</h1>
 <div>Log in below or <a href="/signup">sign up for an account.</a></div>
-<form action="/login" method="post">
+<h3 class="errors"></h3>
+<form id="loginForm" onsubmit="return false;">
 	<div>
 		<label for="email">Email: </label><input name="email" id="email" />
 	</div>
@@ -8,6 +32,6 @@
 		<label for="password">Password: </label><input name="password" id="password" type="password" />
 	</div>	
 	<div>
-		<input type="submit" />
+		<button id="submit">Log In</button>
 	</div>
 </form>
