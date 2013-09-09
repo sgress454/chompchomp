@@ -16,27 +16,9 @@
     <script type="text/javascript" src="/js/move.js"></script>
 
     <script type="text/javascript">
-        // (function() {
-
-        //   var proxiedSync = Backbone.sync;
-
-        //   Backbone.sync = function(method, model, options) {
-        //     options || (options = {});
-
-        //     if (!options.crossDomain) {
-        //       options.crossDomain = true;
-        //     }
-
-        //     if (!options.xhrFields) {
-        //       options.xhrFields = {withCredentials:true};
-        //     }
-
-        //     return proxiedSync(method, model, options);
-        //   };
-        // })();    
-        
+            
         var pageRequiresLogin = false;
-        Mast.data.catamaranServer = "http://catamaran.dyndns.info:1338";
+        Mast.data.catamaranServer = "<%= sails.config.catamaranServer %>";
         Mast.logLevel = 'debug';
         $.ajaxSetup({
             crossDomain: true,

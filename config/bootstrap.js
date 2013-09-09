@@ -10,8 +10,9 @@
 
 module.exports.bootstrap = function (cb) {
 
-  // It's very important to trigger this callack method when you are finished 
-  // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
+  function finish() {
+  	cb();
+  }
   Player.findOrCreate(['email'],[{					
 					name: 'Scott Gress',
 					password: 'scott',
@@ -20,5 +21,5 @@ module.exports.bootstrap = function (cb) {
 					name: 'Joe Blow',
 					password: 'joe',
 					email: 'joe@blow.com'
-				}], cb);
+				}], finish);
 };

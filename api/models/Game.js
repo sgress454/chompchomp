@@ -1,20 +1,16 @@
 module.exports = {
 
-	attributes: {
+	"attributes": {
 
-		players: {
-			type: 'array',
-			defaultsTo: []
+		"players": {
+			"collection": "Player"
 		},
 
-		moves: {
-			type: 'array',
-			defaultsTo: []
-		},
+		"moves": "array",
 
-		startedOn: 'date',
+		"startedOn": "date",
 
-		endedOn: 'date'
+		"endedOn": "date"
 
 	}
 
